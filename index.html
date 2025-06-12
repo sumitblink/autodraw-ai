@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D AutoDraw - AI Drawing with Particles</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- AutoDraw Suggestions Panel -->
+        <div class="suggestions-panel">
+            <div class="suggestions-title">🎨 AutoDraw</div>
+            <div id="suggestions-list">
+                <div style="color: #666; font-size: 12px; text-align: center; margin-top: 20px;">
+                    Start drawing to see suggestions!
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Drawing Area -->
+        <div class="drawing-area">
+            <!-- 3D Background -->
+            <div id="threejs-container"></div>
+            
+            <!-- Drawing Overlay -->
+            <canvas id="drawingCanvas"></canvas>
+            
+            <!-- Controls -->
+            <div class="controls">
+                <button class="btn secondary" onclick="generate3DOptimized()">Create 3D Tubes!</button>
+                <button class="btn particle" onclick="generateParticleShapes()">Particle Shapes!</button>
+                <button class="btn accent" onclick="generate3DSpheres()">Sphere Mode</button>
+                <button class="btn" onclick="clearCanvas()">Clear Drawing</button>
+                <button class="btn danger" onclick="clearAll()">Clear All</button>
+            </div>
+
+            <!-- Optimization Controls -->
+            <div class="optimization-controls">
+                <label>Algorithm:</label>
+                <select id="algorithm">
+                    <option value="douglas-peucker">Douglas-Peucker</option>
+                    <option value="visvalingam">Visvalingam</option>
+                    <option value="none">None</option>
+                </select>
+                <label>Quality:</label>
+                <select id="quality">
+                    <option value="high">High</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="low">Low</option>
+                </select>
+                <label>Particles:</label>
+                <select id="particleCount">
+                    <option value="500">500</option>
+                    <option value="1000" selected>1000</option>
+                    <option value="2000">2000</option>
+                    <option value="5000">5000</option>
+                </select>
+            </div>
+
+            <!-- Color Palette -->
+            <div class="color-palette">
+                <div class="color-btn active" style="background-color: #ff6b6b" onclick="selectColor('#ff6b6b')"></div>
+                <div class="color-btn" style="background-color: #4ecdc4" onclick="selectColor('#4ecdc4')"></div>
+                <div class="color-btn" style="background-color: #45b7d1" onclick="selectColor('#45b7d1')"></div>
+                <div class="color-btn" style="background-color: #96ceb4" onclick="selectColor('#96ceb4')"></div>
+                <div class="color-btn" style="background-color: #feca57" onclick="selectColor('#feca57')"></div>
+                <div class="color-btn" style="background-color: #ff9ff3" onclick="selectColor('#ff9ff3')"></div>
+                <div class="color-btn" style="background-color: #54a0ff" onclick="selectColor('#54a0ff')"></div>
+                <div class="color-btn" style="background-color: #5f27cd" onclick="selectColor('#5f27cd')"></div>
+                <div class="color-btn" style="background-color: #00d2d3" onclick="selectColor('#00d2d3')"></div>
+                <div class="color-btn" style="background-color: #ff6348" onclick="selectColor('#ff6348')"></div>
+            </div>
+
+            <!-- Brush Controls -->
+            <div class="brush-controls">
+                <label>Brush Size</label>
+                <input type="range" id="brushSize" min="2" max="30" value="8" onchange="updateBrushSize()">
+                <label>3D Thickness</label>
+                <input type="range" id="thickness" min="0.1" max="3" step="0.1" value="0.8" onchange="updateThickness()">
+                <label>Opacity</label>
+                <input type="range" id="opacity" min="0.1" max="1" step="0.1" value="0.8" onchange="updateOpacity()">
+            </div>
+
+            <!-- Mode Toggle -->
+            <div class="mode-toggle">
+                <div style="margin-bottom: 8px; font-size: 12px;">Mode</div>
+                <button id="drawMode" class="active" onclick="setMode('draw')">Draw</button>
+                <button id="rotateMode" onclick="setMode('rotate')">Rotate 3D</button>
+            </div>
+
+            <!-- Debug Info -->
+            <div class="debug-info">
+                Drawing Points: <span id="pointCount">0</span><br>
+                Strokes: <span id="strokeCount">0</span><br>
+                3D Objects: <span id="objectCount">0</span><br>
+                Optimized Points: <span id="optimizedCount">0</span><br>
+                Mode: <span id="currentMode">Draw</span><br>
+                Performance: <span id="fps">60</span> FPS
+            </div>
+
+            <!-- AI Prediction Panel -->
+            <div class="prediction-panel">
+                <h3>🤖 AI is guessing...</h3>
+                <div id="predictions">
+                    <div class="prediction-status">Start drawing to see predictions!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/drawing.js"></script>
+    <script src="js/ai-recognition.js"></script>
+    <script src="js/autodraw-api.js"></script>
+    <script src="js/particle-system.js"></script>
+    <script src="js/three-scene.js"></script>
+</body>
+</html>
