@@ -382,7 +382,8 @@ function animate() {
                         const time = Date.now() * userData.animationSpeed;
                         
                         if (userData.originalPosition) {
-                            obj.position.y = userData.originalPosition.y + 
+                            // Oscillate along the z-axis instead of vertical movement
+                            obj.position.z = userData.originalPosition.z +
                                 Math.sin(time + userData.animationOffset) * 0.5;
                         }
                         
