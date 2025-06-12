@@ -1,4 +1,104 @@
 // Particle System and Path Optimization
+// Add this function at the top of particle-system.js
+
+function createSafeParticleMaterial(color, options = {}) {
+    try {
+        const material = new THREE.MeshBasicMaterial({
+            color: new THREE.Color(color),
+            transparent: options.transparent !== false,
+            opacity: options.opacity || 0.8
+        });
+        return material;
+    } catch (error) {
+        console.warn('Error creating particle material, using fallback:', error);
+        return new THREE.MeshBasicMaterial({ color: color || 0xff6b6b });
+    }
+}
+
+// Update the createParticleSystem function to use safe materials
+function createParticleSystem(strokePoints, color, particleCount) {
+    if (strokePoints.length < 2) return null;
+
+    try {
+        // Convert stroke points to 3D path
+        const path3D = strokePoints.map(point => new THREE.Vector3(
+            (point.x - canvas.width / 2) * 0.02,
+            -(point.y - canvas.height / 2) * 0.02,
+            0
+        ));
+
+        // Create curve for smooth interpolation
+        const curve = new THREE.CatmullRomCurve3(path3D);
+        
+        // Create instance group for spheres
+        const sphereGeometry = new THREE.SphereGeometry(0.15, 8, 8);
+        const spheres = [];
+        const targetPositions = [];
+        const originalPositions = [];
+        
+        const baseColor = new THREE.Color(color);
+        
+        // Create gradient colors along the stroke
+        const gradientColors = generateGradientColors(baseColor, particleCount);
+        
+        for (let i = 0; i < particleCount; i++) {
+            try {
+                // Position along curve (0 to 1)
+                const t = i / (particleCount - 1);
+                const pointOnCurve = curve.getPoint(t);
+                
+                // Target position (where particles should form the shape)
+                targetPositions.push(pointOnCurve.x, pointOnCurve.y, pointOnCurve.z);
+                
+                // Starting position (random scattered)
+                const startX = pointOnCurve.x + (Math.random() - 0.5) * 20;
+                const startY = pointOnCurve.y + (Math.random() - 0.5) * 20;
+                const startZ = pointOnCurve.z + (Math.random() - 0.5) * 20;
+                
+                originalPositions.push(startX, startY, startZ);
+                
+                // Create individual sphere with safe material
+                const gradientColor = gradientColors[i];
+                const material = createSafeParticleMaterial(gradientColor, {
+                    transparent: true,
+                    opacity: 0.8
+                });
+                
+                const sphere = new THREE.Mesh(sphereGeometry.clone(), material);
+                sphere.position.set(startX, startY, startZ);
+                
+                // Add random size variation
+                const scale = 0.7 + Math.random() * 0.6;
+                sphere.scale.setScalar(scale);
+                
+                // Add to scene with error handling
+                if (scene) {
+                    scene.add(sphere);
+                    spheres.push(sphere);
+                }
+                
+            } catch (sphereError) {
+                console.warn(`Error creating particle sphere ${i}:`, sphereError);
+            }
+        }
+
+        return {
+            spheres: spheres,
+            targetPositions: targetPositions,
+            originalPositions: originalPositions,
+            formationProgress: 0,
+            isForming: true,
+            gradientColors: gradientColors,
+            particleCount: particleCount,
+            geometry: sphereGeometry // Keep reference for cleanup
+        };
+        
+    } catch (error) {
+        console.error('Error creating particle system:', error);
+        return null;
+    }
+}
+
 
 // Douglas-Peucker Algorithm Implementation
 function douglasPeucker(points, epsilon) {
